@@ -23,11 +23,13 @@ public class Statement {
         String result = String.format("청구 내역 (고객명: %s)\n", invoice.customer());
 
         for (Performance perf : invoice.performances()) {
-            volumeCredits += volumeCreditsFor(perf);
-
             // 청구 내역을 출력한다.
             result += String.format("  %s: %s (%d석)\n", playFor(perf).name(), usd(amountFor(perf)), perf.audience());
             totalAmount += amountFor(perf);
+        }
+
+        for (Performance perf : invoice.performances()) {
+            volumeCredits += volumeCreditsFor(perf);
         }
 
         result += String.format("총액: %s\n", usd(totalAmount));
