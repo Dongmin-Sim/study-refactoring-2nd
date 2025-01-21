@@ -24,6 +24,9 @@ public class Statement {
         for (Performance perf : invoice.performances()) {
             // 청구 내역을 출력한다.
             result += String.format("  %s: %s (%d석)\n", playFor(perf).name(), usd(amountFor(perf)), perf.audience());
+        }
+
+        for (Performance perf : invoice.performances()) {
             totalAmount += amountFor(perf);
         }
 
