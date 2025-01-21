@@ -24,18 +24,17 @@ public class Statement {
         final NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
 
         for (Performance perf : invoice.performances()) {
-            Play play = plays.get(perf.playID());
-            double thisAmount = amountFor(perf, play);
+            double thisAmount = amountFor(perf, playFor(perf));
 
             // 포인트를 적립한다.
             volumeCredits += Math.max(perf.audience() - 30, 0);
             // 희극 관객 5명마다 추가 포인트를 제공한다.
-            if ("comedy".equals(play.type())) {
+            if ("comedy".equals(playFor(perf).type())) {
                 volumeCredits += (int) Math.floor((double) perf.audience() / 5);
             }
 
             // 청구 내역을 출력한다.
-            result += String.format("  %s: %s (%d석)\n", play.name(), format.format(thisAmount / 100.0), perf.audience());
+            result += String.format("  %s: %s (%d석)\n", playFor(perf).name(), format.format(thisAmount / 100.0), perf.audience());
             totalAmount += thisAmount;
         }
 
@@ -47,7 +46,7 @@ public class Statement {
 
     private double amountFor(Performance performance, Play play) {
         double result;
-        switch (play.type()) {
+        switch (playFor(performance).type()) {
             case "tragedy" -> {
                 result = 40_000;
                 if (performance.audience() > 30) {
@@ -61,7 +60,7 @@ public class Statement {
                 }
                 result += 300 * performance.audience();
             }
-            default -> throw new IllegalArgumentException("알 수 없는 장르: " + play.type());
+            default -> throw new IllegalArgumentException("알 수 없는 장르: " + playFor(performance).type());
         }
         return result;
     }
