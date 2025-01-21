@@ -24,7 +24,7 @@ public class Statement {
         final NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
 
         for (Performance perf : invoice.performances()) {
-            double thisAmount = amountFor(perf, playFor(perf));
+            double thisAmount = amountFor(perf);
 
             // 포인트를 적립한다.
             volumeCredits += Math.max(perf.audience() - 30, 0);
@@ -44,7 +44,7 @@ public class Statement {
         return result;
     }
 
-    private double amountFor(Performance performance, Play play) {
+    private double amountFor(Performance performance) {
         double result;
         switch (playFor(performance).type()) {
             case "tragedy" -> {
