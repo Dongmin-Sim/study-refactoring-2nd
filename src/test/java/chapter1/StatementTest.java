@@ -19,16 +19,16 @@ class StatementTest {
 
     @BeforeEach
     void setUp() {
-        sut = new Statement();
         testDataFactory = new TestDataFactory();
-
         invoices = testDataFactory.createInvoices();
         plays = testDataFactory.createPlays();
+
+        sut = new Statement(invoices.get(0), plays);
     }
 
     @Test
     void testStatement() {
-        String result = sut.statement(invoices.get(0), plays);
+        String result = sut.statement();
 
         Assertions.assertThat(result).isEqualTo(
                 """

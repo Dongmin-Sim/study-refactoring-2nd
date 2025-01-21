@@ -9,7 +9,15 @@ import java.util.Locale;
 import java.util.Map;
 
 public class Statement {
-    public String statement(Invoice invoice, Map<String, Play> plays) {
+    private Invoice invoice;
+    private Map<String, Play> plays;
+
+    public Statement(Invoice invoice, Map<String, Play> plays) {
+        this.invoice = invoice;
+        this.plays = plays;
+    }
+
+    public String statement() {
         double totalAmount = 0;
         int volumeCredits = 0;
         String result = String.format("청구 내역 (고객명: %s)\n", invoice.customer());
