@@ -18,7 +18,6 @@ public class Statement {
     }
 
     public String statement() {
-        double totalAmount = 0;
         String result = String.format("청구 내역 (고객명: %s)\n", invoice.customer());
 
         for (Performance perf : invoice.performances()) {
@@ -26,6 +25,7 @@ public class Statement {
             result += String.format("  %s: %s (%d석)\n", playFor(perf).name(), usd(amountFor(perf)), perf.audience());
         }
 
+        double totalAmount = 0;
         for (Performance perf : invoice.performances()) {
             totalAmount += amountFor(perf);
         }
