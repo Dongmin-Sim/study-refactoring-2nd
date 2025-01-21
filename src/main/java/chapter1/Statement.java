@@ -27,14 +27,19 @@ public class Statement {
             totalAmount += amountFor(perf);
         }
 
-        int volumeCredits = 0;
-        for (Performance perf : invoice.performances()) {
-            volumeCredits += volumeCreditsFor(perf);
-        }
+        int volumeCredits = totalVolumeCredits();
 
         result += String.format("총액: %s\n", usd(totalAmount));
         result += String.format("적립 포인트: %d점", volumeCredits);
 
+        return result;
+    }
+
+    private int totalVolumeCredits() {
+        int result = 0;
+        for (Performance perf : invoice.performances()) {
+            result += volumeCreditsFor(perf);
+        }
         return result;
     }
 
