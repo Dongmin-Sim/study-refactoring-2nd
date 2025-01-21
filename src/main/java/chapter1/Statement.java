@@ -19,7 +19,6 @@ public class Statement {
 
     public String statement() {
         double totalAmount = 0;
-        int volumeCredits = 0;
         String result = String.format("청구 내역 (고객명: %s)\n", invoice.customer());
 
         for (Performance perf : invoice.performances()) {
@@ -28,6 +27,7 @@ public class Statement {
             totalAmount += amountFor(perf);
         }
 
+        int volumeCredits = 0;
         for (Performance perf : invoice.performances()) {
             volumeCredits += volumeCreditsFor(perf);
         }
