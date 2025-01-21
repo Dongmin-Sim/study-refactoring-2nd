@@ -21,20 +21,23 @@ public class Statement {
         double totalAmount = 0;
         int volumeCredits = 0;
         String result = String.format("청구 내역 (고객명: %s)\n", invoice.customer());
-        final NumberFormat format = NumberFormat.getCurrencyInstance(Locale.US);
 
         for (Performance perf : invoice.performances()) {
             volumeCredits += volumeCreditsFor(perf);
 
             // 청구 내역을 출력한다.
-            result += String.format("  %s: %s (%d석)\n", playFor(perf).name(), format.format(amountFor(perf) / 100.0), perf.audience());
+            result += String.format("  %s: %s (%d석)\n", playFor(perf).name(), format(amountFor(perf)), perf.audience());
             totalAmount += amountFor(perf);
         }
 
-        result += String.format("총액: %s\n", format.format(totalAmount / 100));
+        result += String.format("총액: %s\n", format(totalAmount));
         result += String.format("적립 포인트: %d점", volumeCredits);
 
         return result;
+    }
+
+    private String format(double number) {
+        return NumberFormat.getCurrencyInstance(Locale.US).format(number / 100);
     }
 
     private int volumeCreditsFor(Performance performance) {
