@@ -25,15 +25,20 @@ public class Statement {
             result += String.format("  %s: %s (%d석)\n", playFor(perf).name(), usd(amountFor(perf)), perf.audience());
         }
 
-        double totalAmount = 0;
-        for (Performance perf : invoice.performances()) {
-            totalAmount += amountFor(perf);
-        }
+        double totalAmount = appleSauce();
 
         result += String.format("총액: %s\n", usd(totalAmount));
         result += String.format("적립 포인트: %d점", totalVolumeCredits());
 
         return result;
+    }
+
+    private double appleSauce() {
+        double totalAmount = 0;
+        for (Performance perf : invoice.performances()) {
+            totalAmount += amountFor(perf);
+        }
+        return totalAmount;
     }
 
     private int totalVolumeCredits() {
