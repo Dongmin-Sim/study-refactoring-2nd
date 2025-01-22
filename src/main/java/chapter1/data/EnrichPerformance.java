@@ -1,11 +1,17 @@
 package chapter1.data;
 
+import java.util.Map;
+
 public record EnrichPerformance(
-        String playID,
+        Play play,
         Integer audience
 ) {
-    public EnrichPerformance(String playID, Integer audience) {
-        this.playID = playID;
-        this.audience = audience;
+    public static EnrichPerformance of(Performance performance, Map<String, Play> plays) {
+        Play play = playFor(performance, plays);
+        return new EnrichPerformance(play, performance.audience());
+    }
+
+    private static Play playFor(Performance performance, Map<String, Play> plays) {
+        return plays.get(performance.playID());
     }
 }

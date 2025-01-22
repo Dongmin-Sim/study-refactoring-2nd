@@ -19,7 +19,7 @@ public class Statement {
         StatementData statementData = new StatementData(
                 invoice.customer(),
                 invoice.performances().stream()
-                        .map(performance -> new EnrichPerformance(performance.playID(), performance.audience()))
+                        .map(performance -> EnrichPerformance.of(performance, plays))
                         .toList()
         );
 
@@ -31,7 +31,7 @@ public class Statement {
 
         for (EnrichPerformance perf : statementData.getPerformances()) {
             // 청구 내역을 출력한다.
-            result += String.format("  %s: %s (%d석)\n", playFor(perf).name(), usd(amountFor(perf)), perf.audience());
+            result += String.format("  %s: %s (%d석)\n", perf.play().name(), usd(amountFor(perf)), perf.audience());
         }
 
         result += String.format("총액: %s\n", usd(totalAmount(statementData)));
@@ -63,7 +63,7 @@ public class Statement {
     private int volumeCreditsFor(EnrichPerformance performance) {
         int result = 0;
         result += Math.max(performance.audience() - 30, 0);
-        if ("comedy".equals(playFor(performance).type())) {
+        if ("comedy".equals(performance.play().type())) {
             result += (int) Math.floor((double) performance.audience() / 5);
         }
         return result;
@@ -71,7 +71,7 @@ public class Statement {
 
     private double amountFor(EnrichPerformance performance) {
         double result;
-        switch (playFor(performance).type()) {
+        switch (performance.play().type()) {
             case "tragedy" -> {
                 result = 40_000;
                 if (performance.audience() > 30) {
@@ -85,12 +85,8 @@ public class Statement {
                 }
                 result += 300 * performance.audience();
             }
-            default -> throw new IllegalArgumentException("알 수 없는 장르: " + playFor(performance).type());
+            default -> throw new IllegalArgumentException("알 수 없는 장르: " + performance.play().type());
         }
         return result;
-    }
-
-    private Play playFor(EnrichPerformance performance) {
-        return plays.get(performance.playID());
     }
 }
