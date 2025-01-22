@@ -9,10 +9,12 @@ public record EnrichPerformance(
         int volumeCredits
 ) {
     public static EnrichPerformance of(Performance performance, Map<String, Play> plays) {
-        Play play = playFor(performance, plays);
-        int amount = amountFor(performance, plays);
-        int volumeCredits = volumeCreditsFor(performance, plays);
-        return new EnrichPerformance(play, performance.audience(), amount, volumeCredits);
+        return new EnrichPerformance(
+                playFor(performance, plays),
+                performance.audience(),
+                amountFor(performance, plays),
+                volumeCreditsFor(performance, plays)
+        );
     }
 
     private static Play playFor(Performance performance, Map<String, Play> plays) {
