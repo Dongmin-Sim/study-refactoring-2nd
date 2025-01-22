@@ -18,6 +18,10 @@ public class Statement {
     }
 
     public String statement() {
+        return renderPlainText();
+    }
+
+    private String renderPlainText() {
         String result = String.format("청구 내역 (고객명: %s)\n", invoice.customer());
 
         for (Performance perf : invoice.performances()) {
