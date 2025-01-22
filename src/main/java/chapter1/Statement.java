@@ -51,21 +51,12 @@ public class Statement {
     private int totalVolumeCredits(StatementData statementData) {
         int result = 0;
         for (EnrichPerformance perf : statementData.getPerformances()) {
-            result += volumeCreditsFor(perf);
+            result += perf.volumeCredits();
         }
         return result;
     }
 
     private String usd(double number) {
         return NumberFormat.getCurrencyInstance(Locale.US).format(number / 100);
-    }
-
-    private int volumeCreditsFor(EnrichPerformance performance) {
-        int result = 0;
-        result += Math.max(performance.audience() - 30, 0);
-        if ("comedy".equals(performance.play().type())) {
-            result += (int) Math.floor((double) performance.audience() / 5);
-        }
-        return result;
     }
 }
