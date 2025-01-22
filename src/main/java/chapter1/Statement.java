@@ -34,17 +34,9 @@ public class Statement {
             result += String.format("  %s: %s (%d석)\n", perf.play().name(), usd(perf.amount()), perf.audience());
         }
 
-        result += String.format("총액: %s\n", usd(totalAmount(statementData)));
+        result += String.format("총액: %s\n", usd(statementData.getTotalAmount()));
         result += String.format("적립 포인트: %d점", totalVolumeCredits(statementData));
 
-        return result;
-    }
-
-    private double totalAmount(StatementData statementData) {
-        double result = 0;
-        for (EnrichPerformance perf : statementData.getPerformances()) {
-            result += perf.amount();
-        }
         return result;
     }
 
