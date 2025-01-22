@@ -35,23 +35,23 @@ public class Statement {
             result += String.format("  %s: %s (%d석)\n", playFor(perf).name(), usd(amountFor(perf)), perf.audience());
         }
 
-        result += String.format("총액: %s\n", usd(totalAmount()));
-        result += String.format("적립 포인트: %d점", totalVolumeCredits());
+        result += String.format("총액: %s\n", usd(totalAmount(statementData)));
+        result += String.format("적립 포인트: %d점", totalVolumeCredits(statementData));
 
         return result;
     }
 
-    private double totalAmount() {
+    private double totalAmount(StatementData statementData) {
         double result = 0;
-        for (Performance perf : invoice.performances()) {
+        for (Performance perf : statementData.getPerformances()) {
             result += amountFor(perf);
         }
         return result;
     }
 
-    private int totalVolumeCredits() {
+    private int totalVolumeCredits(StatementData statementData) {
         int result = 0;
-        for (Performance perf : invoice.performances()) {
+        for (Performance perf : statementData.getPerformances()) {
             result += volumeCreditsFor(perf);
         }
         return result;
