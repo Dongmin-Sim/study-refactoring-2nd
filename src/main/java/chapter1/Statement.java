@@ -1,9 +1,6 @@
 package chapter1;
 
-import chapter1.data.Invoice;
-import chapter1.data.Performance;
-import chapter1.data.Play;
-import chapter1.data.StatementData;
+import chapter1.data.*;
 
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -21,7 +18,9 @@ public class Statement {
     public String statement() {
         StatementData statementData = new StatementData(
                 invoice.customer(),
-                invoice.performances()
+                invoice.performances().stream()
+                        .map(performance -> new EnrichPerformance(performance.playID(), performance.audience()))
+                        .toList()
         );
 
         return renderPlainText(statementData);
@@ -30,7 +29,7 @@ public class Statement {
     private String renderPlainText(StatementData statementData) {
         String result = String.format("청구 내역 (고객명: %s)\n", statementData.getCustomer());
 
-        for (Performance perf : statementData.getPerformances()) {
+        for (EnrichPerformance perf : statementData.getPerformances()) {
             // 청구 내역을 출력한다.
             result += String.format("  %s: %s (%d석)\n", playFor(perf).name(), usd(amountFor(perf)), perf.audience());
         }
@@ -43,7 +42,7 @@ public class Statement {
 
     private double totalAmount(StatementData statementData) {
         double result = 0;
-        for (Performance perf : statementData.getPerformances()) {
+        for (EnrichPerformance perf : statementData.getPerformances()) {
             result += amountFor(perf);
         }
         return result;
@@ -51,7 +50,7 @@ public class Statement {
 
     private int totalVolumeCredits(StatementData statementData) {
         int result = 0;
-        for (Performance perf : statementData.getPerformances()) {
+        for (EnrichPerformance perf : statementData.getPerformances()) {
             result += volumeCreditsFor(perf);
         }
         return result;
@@ -61,7 +60,7 @@ public class Statement {
         return NumberFormat.getCurrencyInstance(Locale.US).format(number / 100);
     }
 
-    private int volumeCreditsFor(Performance performance) {
+    private int volumeCreditsFor(EnrichPerformance performance) {
         int result = 0;
         result += Math.max(performance.audience() - 30, 0);
         if ("comedy".equals(playFor(performance).type())) {
@@ -70,7 +69,7 @@ public class Statement {
         return result;
     }
 
-    private double amountFor(Performance performance) {
+    private double amountFor(EnrichPerformance performance) {
         double result;
         switch (playFor(performance).type()) {
             case "tragedy" -> {
@@ -91,7 +90,7 @@ public class Statement {
         return result;
     }
 
-    private Play playFor(Performance performance) {
+    private Play playFor(EnrichPerformance performance) {
         return plays.get(performance.playID());
     }
 }
