@@ -16,11 +16,9 @@ public class StatementData {
     }
 
     private double totalAmount(List<EnrichPerformance> performances) {
-        double result = 0;
-        for (EnrichPerformance perf : performances) {
-            result += perf.amount();
-        }
-        return result;
+        return performances.stream()
+                .mapToDouble(EnrichPerformance::amount)
+                .sum();
     }
 
     private int totalVolumeCredits(List<EnrichPerformance> performances) {
