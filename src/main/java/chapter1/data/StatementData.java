@@ -5,7 +5,7 @@ import java.util.List;
 public class StatementData {
     private String customer;
     private List<EnrichPerformance> performances;
-    private double totalAmount;
+    private int totalAmount;
     private int totalVolumeCredits;
 
     public StatementData(String customer, List<EnrichPerformance> performances) {
@@ -15,9 +15,9 @@ public class StatementData {
         this.totalVolumeCredits = totalVolumeCredits(performances);
     }
 
-    private double totalAmount(List<EnrichPerformance> performances) {
+    private int totalAmount(List<EnrichPerformance> performances) {
         return performances.stream()
-                .mapToDouble(EnrichPerformance::amount)
+                .mapToInt(EnrichPerformance::amount)
                 .sum();
     }
 
