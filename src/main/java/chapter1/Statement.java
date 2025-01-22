@@ -19,14 +19,18 @@ public class Statement {
     }
 
     public String statement() {
-        StatementData statementData = new StatementData();
+        StatementData statementData = new StatementData(
+                invoice.customer(),
+                invoice.performances()
+        );
+
         return renderPlainText(statementData);
     }
 
     private String renderPlainText(StatementData statementData) {
-        String result = String.format("청구 내역 (고객명: %s)\n", invoice.customer());
+        String result = String.format("청구 내역 (고객명: %s)\n", statementData.getCustomer());
 
-        for (Performance perf : invoice.performances()) {
+        for (Performance perf : statementData.getPerformances()) {
             // 청구 내역을 출력한다.
             result += String.format("  %s: %s (%d석)\n", playFor(perf).name(), usd(amountFor(perf)), perf.audience());
         }
