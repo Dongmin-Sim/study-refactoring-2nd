@@ -22,11 +22,9 @@ public class StatementData {
     }
 
     private int totalVolumeCredits(List<EnrichPerformance> performances) {
-        int result = 0;
-        for (EnrichPerformance perf : performances) {
-            result += perf.volumeCredits();
-        }
-        return result;
+        return performances.stream()
+                .mapToInt(EnrichPerformance::volumeCredits)
+                .sum();
     }
 
     public String getCustomer() {
