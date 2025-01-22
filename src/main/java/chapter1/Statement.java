@@ -16,14 +16,7 @@ public class Statement {
     }
 
     public String statement() {
-        StatementData statementData = new StatementData(
-                invoice.customer(),
-                invoice.performances().stream()
-                        .map(performance -> EnrichPerformance.of(performance, plays))
-                        .toList()
-        );
-
-        return renderPlainText(statementData);
+        return renderPlainText(StatementData.createStatementData(invoice, plays));
     }
 
     private String renderPlainText(StatementData statementData) {

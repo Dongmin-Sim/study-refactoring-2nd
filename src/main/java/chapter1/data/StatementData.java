@@ -1,6 +1,7 @@
 package chapter1.data;
 
 import java.util.List;
+import java.util.Map;
 
 public class StatementData {
     private String customer;
@@ -13,6 +14,17 @@ public class StatementData {
         this.performances = performances;
         this.totalAmount = totalAmount(performances);
         this.totalVolumeCredits = totalVolumeCredits(performances);
+    }
+
+    public static StatementData createStatementData(Invoice invoice, Map<String, Play> plays) {
+        List<EnrichPerformance> performances = invoice.performances().stream()
+            .map(performance -> EnrichPerformance.of(performance, plays))
+            .toList();
+
+        return new StatementData(
+            invoice.customer(),
+            performances
+        );
     }
 
     private int totalAmount(List<EnrichPerformance> performances) {
