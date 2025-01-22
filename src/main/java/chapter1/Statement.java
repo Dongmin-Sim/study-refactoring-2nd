@@ -35,16 +35,8 @@ public class Statement {
         }
 
         result += String.format("총액: %s\n", usd(statementData.getTotalAmount()));
-        result += String.format("적립 포인트: %d점", totalVolumeCredits(statementData));
+        result += String.format("적립 포인트: %d점", statementData.getTotalVolumeCredits());
 
-        return result;
-    }
-
-    private int totalVolumeCredits(StatementData statementData) {
-        int result = 0;
-        for (EnrichPerformance perf : statementData.getPerformances()) {
-            result += perf.volumeCredits();
-        }
         return result;
     }
 
