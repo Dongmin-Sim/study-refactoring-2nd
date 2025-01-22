@@ -5,11 +5,11 @@ import java.util.Map;
 public record EnrichPerformance(
         Play play,
         Integer audience,
-        double amount
+        int amount
 ) {
     public static EnrichPerformance of(Performance performance, Map<String, Play> plays) {
         Play play = playFor(performance, plays);
-        double amount = amountFor(performance, plays);
+        int amount = amountFor(performance, plays);
         return new EnrichPerformance(play, performance.audience(), amount);
     }
 
@@ -17,8 +17,8 @@ public record EnrichPerformance(
         return plays.get(performance.playID());
     }
 
-    private static double amountFor(Performance performance, Map<String, Play> plays) {
-        double result;
+    private static int amountFor(Performance performance, Map<String, Play> plays) {
+        int result;
         switch (playFor(performance, plays).type()) {
             case "tragedy" -> {
                 result = 40_000;
