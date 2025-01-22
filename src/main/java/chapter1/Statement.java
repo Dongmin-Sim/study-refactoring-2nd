@@ -3,6 +3,7 @@ package chapter1;
 import chapter1.data.Invoice;
 import chapter1.data.Performance;
 import chapter1.data.Play;
+import chapter1.data.StatementData;
 
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -18,10 +19,11 @@ public class Statement {
     }
 
     public String statement() {
-        return renderPlainText();
+        StatementData statementData = new StatementData();
+        return renderPlainText(statementData);
     }
 
-    private String renderPlainText() {
+    private String renderPlainText(StatementData statementData) {
         String result = String.format("청구 내역 (고객명: %s)\n", invoice.customer());
 
         for (Performance perf : invoice.performances()) {
