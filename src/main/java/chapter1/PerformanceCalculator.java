@@ -27,21 +27,7 @@ public class PerformanceCalculator {
     }
 
     public int amount() {
-        int result;
-        switch (play.type()) {
-            case "tragedy" -> {
-                throw new IllegalArgumentException("오류 발생");
-            }
-            case "comedy" -> {
-                result = 30_000;
-                if (performance.audience() > 20) {
-                    result += 10_000 + 500 * (performance.audience() - 20);
-                }
-                result += 300 * performance.audience();
-            }
-            default -> throw new IllegalArgumentException("알 수 없는 장르: " + play.type());
-        }
-        return result;
+        throw new UnsupportedOperationException("이 메서드는 서브 클래스에서 구현되어야 합니다.");
     }
 
     public int volumeCredits() {
