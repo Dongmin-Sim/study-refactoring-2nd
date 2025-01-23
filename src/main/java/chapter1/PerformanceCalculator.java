@@ -1,7 +1,7 @@
 package chapter1;
 
-import chapter1.calculator.ComedyCalculator;
-import chapter1.calculator.TragedyCalculator;
+import chapter1.calculator.ComedyPerformanceCalculator;
+import chapter1.calculator.TragedyPerformanceCalculator;
 import chapter1.data.Performance;
 import chapter1.data.Play;
 
@@ -16,8 +16,8 @@ public abstract class PerformanceCalculator {
 
     public static PerformanceCalculator createPerformanceCalculator(Performance performance, Play play) {
         return switch (play.type()) {
-            case "tragedy" -> new TragedyCalculator(performance, play);
-            case "comedy" -> new ComedyCalculator(performance, play);
+            case "tragedy" -> new TragedyPerformanceCalculator(performance, play);
+            case "comedy" -> new ComedyPerformanceCalculator(performance, play);
             default -> throw new IllegalArgumentException("알 수 없는 장르: " + play.type());
         };
     }
