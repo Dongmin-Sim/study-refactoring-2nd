@@ -6,6 +6,7 @@ import chapter1.data.Performance;
 import chapter1.data.Play;
 
 public abstract class PerformanceCalculator {
+
     private Performance performance;
     private Play play;
 
@@ -14,7 +15,8 @@ public abstract class PerformanceCalculator {
         this.play = play;
     }
 
-    public static PerformanceCalculator createPerformanceCalculator(Performance performance, Play play) {
+    public static PerformanceCalculator createPerformanceCalculator(Performance performance,
+        Play play) {
         return switch (play.type()) {
             case "tragedy" -> new TragedyPerformanceCalculator(performance, play);
             case "comedy" -> new ComedyPerformanceCalculator(performance, play);

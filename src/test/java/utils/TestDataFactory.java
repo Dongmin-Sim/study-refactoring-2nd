@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public class TestDataFactory {
+
     ObjectMapper objectMapper = new ObjectMapper();
     ClassLoader classLoader = getClass().getClassLoader();
 
@@ -23,6 +24,7 @@ public class TestDataFactory {
             invoices = objectMapper.readValue(inputStream, new TypeReference<>() {
             });
         } catch (IOException e) {
+            // 로깅 변경 필요
             e.printStackTrace();
         }
 

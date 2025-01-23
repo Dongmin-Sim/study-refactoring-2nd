@@ -7,6 +7,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class Statement {
+
     private Invoice invoice;
     private Map<String, Play> plays;
 
@@ -28,7 +29,8 @@ public class Statement {
 
         for (EnrichPerformance perf : statementData.getPerformances()) {
             // 청구 내역을 출력한다.
-            result += String.format("  %s: %s (%d석)\n", perf.play().name(), usd(perf.amount()), perf.audience());
+            result += String.format("  %s: %s (%d석)\n", perf.play().name(), usd(perf.amount()),
+                perf.audience());
         }
 
         result += String.format("총액: %s\n", usd(statementData.getTotalAmount()));
@@ -43,12 +45,14 @@ public class Statement {
         result += "<tr><th>연극</th><th>좌석 수</th><th>금액</th></tr>";
         for (EnrichPerformance perf : statementData.getPerformances()) {
             // 청구 내역을 출력한다.
-            result += String.format("  <tr><td>%s</td><td>(%d석)</td>", perf.play().name(), perf.audience());
+            result += String.format("  <tr><td>%s</td><td>(%d석)</td>", perf.play().name(),
+                perf.audience());
             result += String.format("<td>%s</td></tr>\n", usd(perf.amount()));
         }
         result += "</table>\n";
         result += String.format("<p>총액: <em>%s</em></p>\n", usd(statementData.getTotalAmount()));
-        result += String.format("<p>적립 포인트: <em>%d</em>점</p>", statementData.getTotalVolumeCredits());
+        result += String.format("<p>적립 포인트: <em>%d</em>점</p>",
+            statementData.getTotalVolumeCredits());
         return result;
     }
 

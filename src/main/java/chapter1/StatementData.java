@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public class StatementData {
+
     private String customer;
     private List<EnrichPerformance> performances;
     private int totalAmount;
@@ -31,14 +32,14 @@ public class StatementData {
 
     private int totalAmount(List<EnrichPerformance> performances) {
         return performances.stream()
-                .mapToInt(EnrichPerformance::amount)
-                .sum();
+            .mapToInt(EnrichPerformance::amount)
+            .sum();
     }
 
     private int totalVolumeCredits(List<EnrichPerformance> performances) {
         return performances.stream()
-                .mapToInt(EnrichPerformance::volumeCredits)
-                .sum();
+            .mapToInt(EnrichPerformance::volumeCredits)
+            .sum();
     }
 
     public String getCustomer() {
