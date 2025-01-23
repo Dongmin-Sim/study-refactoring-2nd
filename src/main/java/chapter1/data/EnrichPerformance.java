@@ -1,5 +1,6 @@
 package chapter1.data;
 
+import chapter1.PerformanceCalculator;
 import java.util.Map;
 
 public record EnrichPerformance(
@@ -9,6 +10,8 @@ public record EnrichPerformance(
         int volumeCredits
 ) {
     public static EnrichPerformance of(Performance performance, Map<String, Play> plays) {
+        PerformanceCalculator calculator = new PerformanceCalculator(performance, playFor(performance, plays));
+
         return new EnrichPerformance(
                 playFor(performance, plays),
                 performance.audience(),
