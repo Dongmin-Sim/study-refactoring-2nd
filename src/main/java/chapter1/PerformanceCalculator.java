@@ -1,5 +1,7 @@
 package chapter1;
 
+import chapter1.calculator.ComedyCalculator;
+import chapter1.calculator.TragedyCalculator;
 import chapter1.data.Performance;
 import chapter1.data.Play;
 
@@ -11,6 +13,18 @@ public class PerformanceCalculator {
     public PerformanceCalculator(Performance performance, Play play) {
         this.performance = performance;
         this.play = play;
+    }
+
+    public static PerformanceCalculator createPerformanceCalculator(Performance performance, Play play) {
+        switch (play.type()) {
+            case "tragedy" -> {
+                return new TragedyCalculator(performance, play);
+            }
+            case "comedy" -> {
+                return new ComedyCalculator(performance, play);
+            }
+            default -> throw new IllegalArgumentException("알 수 없는 장르: " + play.type());
+        }
     }
 
     public int amount() {
