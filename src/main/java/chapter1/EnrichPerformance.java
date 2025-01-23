@@ -1,8 +1,9 @@
-package chapter1.data;
+package chapter1;
 
 import static chapter1.PerformanceCalculator.*;
 
-import chapter1.PerformanceCalculator;
+import chapter1.data.Performance;
+import chapter1.data.Play;
 import java.util.Map;
 
 public record EnrichPerformance(

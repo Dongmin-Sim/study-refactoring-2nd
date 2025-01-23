@@ -1,5 +1,7 @@
-package chapter1.data;
+package chapter1;
 
+import chapter1.data.Invoice;
+import chapter1.data.Play;
 import java.util.List;
 import java.util.Map;
 
