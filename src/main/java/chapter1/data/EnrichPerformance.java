@@ -15,7 +15,7 @@ public record EnrichPerformance(
         return new EnrichPerformance(
                 playFor(performance, plays),
                 performance.audience(),
-                calculator.amountFor(),
+                calculator.amount(),
                 calculator.volumeCreditsFor()
         );
     }

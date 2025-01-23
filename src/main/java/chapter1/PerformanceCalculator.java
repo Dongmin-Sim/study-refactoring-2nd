@@ -13,7 +13,7 @@ public class PerformanceCalculator {
         this.play = play;
     }
 
-    public int amountFor() {
+    public int amount() {
         int result;
         switch (play.type()) {
             case "tragedy" -> {
