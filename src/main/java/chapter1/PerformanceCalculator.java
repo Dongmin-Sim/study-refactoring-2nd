@@ -6,9 +6,8 @@ import chapter1.data.Performance;
 import chapter1.data.Play;
 
 public class PerformanceCalculator {
-
-    private Performance performance;
-    private Play play;
+    protected Performance performance;
+    protected Play play;
 
     public PerformanceCalculator(Performance performance, Play play) {
         this.performance = performance;
@@ -31,10 +30,7 @@ public class PerformanceCalculator {
         int result;
         switch (play.type()) {
             case "tragedy" -> {
-                result = 40_000;
-                if (performance.audience() > 30) {
-                    result += 1_000 * (performance.audience() - 30);
-                }
+                throw new IllegalArgumentException("오류 발생");
             }
             case "comedy" -> {
                 result = 30_000;
