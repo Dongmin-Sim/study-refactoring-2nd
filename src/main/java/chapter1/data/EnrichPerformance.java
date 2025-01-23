@@ -15,34 +15,13 @@ public record EnrichPerformance(
         return new EnrichPerformance(
                 playFor(performance, plays),
                 performance.audience(),
-                amountFor(performance, plays),
+                calculator.amountFor(),
                 volumeCreditsFor(performance, plays)
         );
     }
 
     private static Play playFor(Performance performance, Map<String, Play> plays) {
         return plays.get(performance.playID());
-    }
-
-    private static int amountFor(Performance performance, Map<String, Play> plays) {
-        int result;
-        switch (playFor(performance, plays).type()) {
-            case "tragedy" -> {
-                result = 40_000;
-                if (performance.audience() > 30) {
-                    result += 1_000 * (performance.audience() - 30);
-                }
-            }
-            case "comedy" -> {
-                result = 30_000;
-                if (performance.audience() > 20) {
-                    result += 10_000 + 500 * (performance.audience() - 20);
-                }
-                result += 300 * performance.audience();
-            }
-            default -> throw new IllegalArgumentException("알 수 없는 장르: " + playFor(performance, plays).type());
-        }
-        return result;
     }
 
     private static int volumeCreditsFor(Performance performance, Map<String, Play> plays) {
