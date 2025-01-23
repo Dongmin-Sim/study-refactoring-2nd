@@ -2,9 +2,9 @@ package chapter1;
 
 import chapter1.data.Performance;
 import chapter1.data.Play;
-import java.util.Map;
 
 public class PerformanceCalculator {
+
     private Performance performance;
     private Play play;
 
@@ -30,6 +30,15 @@ public class PerformanceCalculator {
                 result += 300 * performance.audience();
             }
             default -> throw new IllegalArgumentException("알 수 없는 장르: " + play.type());
+        }
+        return result;
+    }
+
+    public int volumeCreditsFor() {
+        int result = 0;
+        result += Math.max(performance.audience() - 30, 0);
+        if ("comedy".equals(play.type())) {
+            result += (int) Math.floor((double) performance.audience() / 5);
         }
         return result;
     }
