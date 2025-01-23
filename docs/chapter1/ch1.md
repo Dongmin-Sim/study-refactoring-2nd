@@ -271,3 +271,204 @@ SSEL
 이 역시도 위에서 진행했던 방법과 동일한 방법으로 리팩터링을 수행한다. 
 
 `Split - Slice - Extract - Inline`
+
+## 계산 단계와 포맷팅 단계 분리하기
+이전까지의 단계는 프로그램의 **논리적인 요소를 파악**하기 쉽도록 코드의 구조를 보강하는데 주안점.
+- 복잡하게 얽힌 덩어리를 잘개 쪼개서 골격을 개선하는 작업. 
+
+이제 기능 추가를 수행할 수 있음. 
+- statement() HTML버전을 만드는 기능 추가.
+
+**단계 쪼개기**를 사용해볼 수 있음.
+- `statement()`의 로직을 2단계로 나누는 것. 
+  1. `statement()`에 필요한 데이터를 처리하고, :: 계산 단계 
+     - 두번째로 전달할 **중간 데이터 구조**를 생성하는 것.
+  2. 앞서 처리한 결과를 텍스트나 HTML로 표현하는 것. :: 포맷팅 단계
+     - 포맷팅 단계의 코드들을 "함수 추출하기"로 분리한다. 
+
+데이터를 처리하는 부분을 `StatementData`라는 중간 데이터 구조를 통해서 `render-` 메서드에 넘겨줄 값들을 통일. 
+기존의 `render-` 메서드에서 사용하던 인자들을 `StatementData`를 통해서 얻도록 구조를 변경
+```java
+public class StatementData {
+
+    private String customer;
+    private List<EnrichPerformance> performances;
+    private int totalAmount;
+    private int totalVolumeCredits;
+    // ...
+
+    public static StatementData createStatementData(Invoice invoice, Map<String, Play> plays) {
+        List<EnrichPerformance> performances = invoice.performances().stream()
+            .map(performance -> EnrichPerformance.of(performance, plays))
+            .toList();
+
+        return new StatementData(
+            invoice.customer(),
+            performances
+        );
+    }
+}
+```
+
+`EnrichPerformance`라는 데이터 객체를 만들어 각 공연에 필요했던 계산로직을 옮겼음.   
+`StatementData`의 정적 팩토리 메서드를 통해서 `EnrichPerformance`로 래핑 후 초기화
+
+중간 데이터 구조를 통해서 입력 인자를 통일함으로 `renderHtml` 함수도 보다 쉽게 구현이 가능.  
+무엇보다 계산 코드를 중복하지 않아도 되게 됨. 
+
+## 중간 점검: 두 단계로 분리 
+1. 데이터를 처리하는 코드 `StatementData`
+2. 처리한 결과를 텍스트나 HTML로 표현하는 코드 `Statement`
+
+코드의 양은 늘었지만, 추가된 코드들 덕분에 전체 로직을 구성하는 요소 각각이 더 뚜렷하게 드러났음.  
+계산 부분과 출력 부분이 분리가 된 것을 쉽게 확인할 수 있음. -> 모듈화를 하면 각 부분이 하는일 & 맞물려 돌아가는 과정을 파악하기 쉬움. 
+
+## 다형성 활용 - 계산 코드 재구성
+연극 장르를 추가하고, 장르마다 공연료와 적립 포인트 계산법을 다르게 지정하도록 기능을 수정.  
+
+**현재상태에서는**  
+계산을 수행하는 함수에서 조건문을 수정해야함. (아래 코드 참조)
+```java
+private static int amountFor(Performance performance, Map<String, Play> plays) {
+    int result;
+    switch (playFor(performance, plays).type()) {
+        case "tragedy" -> {
+            result = 40_000;
+            if (performance.audience() > 30) {
+                result += 1_000 * (performance.audience() - 30);
+            }
+        }
+    }
+    //...
+}
+```
+`switch` 문을 활용한 조건부 로직은 코드의 수정 횟수가 늘어날수록 골칫거리가 되기 쉽니다. 
+
+### 조건부 로직을 명확한 구조로 보완하는 방법
+객체지향의 핵심 특성인 다형성을 활용하는 것이 자연스러움.  
+- 상속 계층을 구성해서 "희극" 서브클래스와, "비극" 서브클래스가 각자의 구체적인 계산 로직을 정의하는 방법. 
+- '장르'를 호출하는 클라이언트 쪽에서는 '공연료 계산 함수'만 호출하면되고, "희극", "비극"에 따라 오버라이드된 계산 로직을 연결하는 것은 언어차원에서 지원 해줌.
+
+`조건부 로직을 다형성으로 바꾸기` 리팩터링 기법을 사용.
+- 조건부 코드 한 덩어리를 다형성을 활용하는 방식으로 바꿔줌.
+- 이 기법을 적용하려면 상속 계층부터 정의해야함. 
+- 공연료와 적립 포인트 계산 함수를 담을 클래스가 필요 
+
+```java
+public class PerformanceCalculator {
+    private Performance performance;
+    private Play play;
+
+    public PerformanceCalculator(Performance performance, Play play) {
+        this.performance = performance;
+        this.play = play;
+    }
+    
+    // 공연료 계산 로직 
+    
+    // 적립 포인트 계산 로직
+    
+}
+```
+`EnrichPerformance`에 있던 계산 로직 (`amountFor()`-공연료 계산 로직과 `volumeCreditsFor()`-적립 포인트 계산 로직)을  
+새롭게 정의한 `PerformanceCalculator` 클래스로 이전한다. - `함수 옮기기` 방법 
+
+`PerformanceCalculator`클레스에 로직을 담았으니 새롭게 정의한 공연료 계산기를 다형성을 지원하도록 만들 수 있다. 
+1. 먼저 할일은 타입 코드 대신 서브클래스를 사용하도록 변경하는 것.(`타입 코드를 서브클래스로 바꾸기`)
+    - `PerformanceCalculator`의 서브 클래스들을 준비하고, `createStatementData` 에서 적합한 서브클래스를 사용할 수 있도록 해야함
+      - 정적 팩토리 메서드로 play를 받아 타입에 맞는 적절한 서브 클래스들을 선택해줄 수 있다. `생성자를 팩토리 메서드로 바꾸기`
+
+```java
+ public static PerformanceCalculator createPerformanceCalculator(Performance performance, Play play) {
+    switch (play.type()) {
+        case "tragedy" -> {
+            return new TragedyCalculator(performance, play);
+        }
+        case "comedy" -> {
+            return new ComedyCalculator(performance, play);
+        }
+        default -> throw new IllegalArgumentException("알 수 없는 장르: " + play.type());
+    }
+}
+```
+
+이제 서브 클래스의 공통 메서드를 정의한 다음 각각 서브클래스에서 조건부 로직을 오버라이드하여 구현할 수 있다.
+```java
+public class TragedyCalculator extends PerformanceCalculator {
+
+    public TragedyCalculator(Performance performance, Play play) {
+        super(performance, play);
+    }
+
+    @Override
+    public int amount() {
+        int result = 40_000;
+        if (performance.audience() > 30) {
+            result += 1_000 * (performance.audience() - 30);
+        }
+        return result;
+    }
+}
+```
+```java
+public class ComedyCalculator extends PerformanceCalculator {
+
+    public ComedyCalculator(Performance performance, Play play) {
+        super(performance, play);
+    }
+
+    @Override
+    public int amount() {
+        int result = 30_000;
+        if (performance.audience() > 20) {
+            result += 10_000 + 500 * (performance.audience() - 20);
+        }
+        result += 300 * performance.audience();
+        return result;
+    }
+}
+```
+
+적립 포인트 계산 부분도 마찬가지로 각각 계산 로직을 서브클래스로 옮겨준다. 이때 공통적으로 적용될 수 있는 로직은 슈퍼클래스에 남겨두고 장르마다 변경되는 부분이 힐요할때 오버라이드 하도록 구현한다.
+```java
+public class PerformanceCalculator {
+    public int volumeCredits() {
+        return Math.max(performance.audience() - 30, 0);
+    }
+}
+```
+
+```java
+public class ComedyCalculator extends PerformanceCalculator {
+    @Override
+    public int volumeCredits() {
+        return super.volumeCredits() + (int) Math.floor((double) performance.audience() / 5);
+    }
+}
+```
+
+## 마치며
+이 장에서 경험한 리팩터링 
+- `함수 추출하기`
+- `변수 인라인하기`
+- `함수 옮기기`
+- `조건부 로직을 다형성으로 바꾸기`
+
+1장에서 진행한 리팩터링의 큰 단계
+1. 원본함수를 여러 함수로 나누기 (중첩함수를 사용했지만 java로 옮길때 클래스를 사용하기도 했음.)
+2. `단계 쪼개기` 로 계산 코드와 출력 코드를 분리 
+3. 계산 로직을 다형성으로 구현하기
+
+리팩터링은 대부분 코드가 하는 일을 파악하는 데서 시작함. 
+코드를 읽고, 개선점을 찾고, 개선점을 리팩토링으로 반영하는 방식. 
+
+> 좋은 코드를 가늠하는 확실한 방법은 '얼마나 수정하기 쉬운가'다.
+
+## 소감 
+리팩터링 1장을 실습하면서 느낀 점. 리팩토링을 진행하면서 테스트를 계속 돌리면서 최대한 작은 단위로 커밋을 반복하다보니, 한 단계 한 단계 쌓아가는 느낌이 좋았고 되게 자연스러운 흐름대로 흘러가는 것이 인상 깊었음. 흐름이 리듬감 있었다. 또 코드가 동작함을 보장하면서 변화하고 있다는 사실에서 안정감을 느꼈고(테스트 실행을 연타하는 자신을 발견) 흥미롭고 재밌었음.(하다보니 시간가는 줄 몰라 놀랐음.) 책에서 언급하는 단계나 절차들이 반복되는 부분도 있어서 이런 패턴들은 꾸준히 연습해야 눈에 익고 감이 오겠다는 것을 느꼈음. 앞으로 나올 리팩터링에 대한 세부 사항들이 기대가 된다.
+
+읽으면서 가장 와닿았던 문장은 
+> 효과적인 리팩터링의 핵심은 단계를 잘게 나눠야 더 빠르게 처리할 수 있고, 이런 작은 단계들이 모여서 상당히 큰 변화를 이룰 수 있다는 사실을 깨닫는것
+
+공부나 리팩터링하는 방식이나, 삶을 열심히 살아가는 모든 분야에 적용되는 말 같아서 개인적으로 인상깊었다.
+2025.01.23
